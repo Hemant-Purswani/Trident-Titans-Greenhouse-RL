@@ -33,7 +33,10 @@ from openai import OpenAI
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
-API_KEY = os.environ.get("HF_TOKEN", os.environ.get("OPENAI_API_KEY", ""))
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
+# Optional - used for local docker evaluation
+LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME", "greenhouse-env:latest")
 
 BENCHMARK = "greenhouse"
 TEMPERATURE = 0.3
@@ -219,7 +222,7 @@ async def run_task(client: OpenAI, task: dict) -> dict:
 
     try:
         # Connect to environment
-        env = await GreenhouseEnv.from_docker_image("greenhouse-env:latest")
+        env = await GreenhouseEnv.from_docker_image(LOCAL_IMAGE_NAME)
 
         try:
             result = await env.reset()
@@ -327,7 +330,7 @@ def _obs_to_dict(obs) -> dict:
 
 async def main() -> None:
     """Run all tasks and report baseline scores."""
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
     print("=" * 70, flush=True)
     print("  Greenhouse Climate Control — Baseline Inference", flush=True)
