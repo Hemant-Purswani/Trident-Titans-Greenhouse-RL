@@ -27,7 +27,7 @@ import os
 import textwrap
 from typing import List, Optional
 
-from openai import OpenAI
+# Note: Critical imports moved inside functions to allow logging before failures
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
@@ -179,7 +179,7 @@ def parse_action(text: str) -> dict:
     }
 
 
-def get_model_action(client: OpenAI, obs_data: dict,
+def get_model_action(client: any, obs_data: dict,
                      history: List[str]) -> dict:
     """Query the LLM for a greenhouse control action."""
     user_prompt = build_user_prompt(obs_data)
@@ -205,14 +205,22 @@ def get_model_action(client: OpenAI, obs_data: dict,
 # ─── Environment Interaction ─────────────────────────────────────────────────
 
 
-async def run_task(client: OpenAI, task: dict) -> dict:
+async def run_task(task: dict) -> dict:
     """Run a single task and return results."""
-    from greenhouse import GreenhouseEnv, GreenhouseAction
-
     task_id = task["id"]
     max_steps = task["max_steps"]
 
+    # CRITICAL: Always log [START] before ANY other operations or imports
     log_start(task=task_id, env=BENCHMARK, model=MODEL_NAME)
+
+    try:
+        from openai import OpenAI
+        from greenhouse import GreenhouseEnv, GreenhouseAction
+    except ImportError as e:
+        print(f"[FATAL] Missing dependencies: {e}", flush=True)
+        log_step(step=0, action="import_error", reward=0.0, done=True, error=str(e))
+        log_end(success=False, steps=0, score=0.0, rewards=[])
+        return {"task_id": task_id, "score": 0.0, "steps": 0, "success": False, "rewards": []}
 
     history: List[str] = []
     rewards: List[float] = []
@@ -220,14 +228,22 @@ async def run_task(client: OpenAI, task: dict) -> dict:
     score = 0.0
     success = False
 
+    client = None
+    try:
+        client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+    except Exception as exc:
+        print(f"[FATAL] Failed to initialize OpenAI client: {exc}", flush=True)
+        log_step(step=0, action="auth_error", reward=0.0, done=True, error=str(exc))
+        log_end(success=False, steps=0, score=0.0, rewards=[])
+        return {"task_id": task_id, "score": 0.0, "steps": 0, "success": False, "rewards": []}
+
     env = None
     try:
         # Connect to environment
         env = await GreenhouseEnv.from_docker_image(LOCAL_IMAGE_NAME)
     except Exception as exc:
         print(f"[DEBUG] Failed to initialize environment connection: {exc}", flush=True)
-        # We need to emit [START] and [END] even on failure for some validators
-        log_start(task=task_id, env=BENCHMARK, model=MODEL_NAME)
+        # Emit logs to satisfy validator
         log_step(step=0, action="connection_failure", reward=0.0, done=True, error=str(exc))
         log_end(success=False, steps=0, score=0.0, rewards=[])
         return {
@@ -344,23 +360,10 @@ def _obs_to_dict(obs) -> dict:
 
 async def main() -> None:
     """Run all tasks and report baseline scores."""
-    try:
-        client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
-    except Exception as exc:
-        print(f"[FATAL] Failed to initialize OpenAI client: {exc}", flush=True)
-        return
-
-    print("=" * 70, flush=True)
-    print("  Greenhouse Climate Control — Baseline Inference", flush=True)
-    print(f"  Model: {MODEL_NAME}", flush=True)
-    print(f"  API: {API_BASE_URL}", flush=True)
-    print("=" * 70, flush=True)
-
     results = []
     for task in TASKS:
-        print(f"\n--- Task: {task['id']} ({task['difficulty']}) ---",
-              flush=True)
-        result = await run_task(client, task)
+        print(f"\n--- Starting Task: {task['id']} ---", flush=True)
+        result = await run_task(task)
         results.append(result)
         print(f"Score: {result['score']:.3f}", flush=True)
 
