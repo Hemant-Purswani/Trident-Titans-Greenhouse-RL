@@ -35,10 +35,10 @@ dev = [
 
 [project.scripts]
 # Server entry point - enables running via: uv run --project . server
-# or: python -m greenhouse.server.app
-server = "greenhouse.server.app:main"
+# or: python -m server.app
+server = "server.app:main"
 
 [tool.setuptools]
 include-package-data = true
-packages = ["greenhouse", "greenhouse.server"]
-package-dir = { "greenhouse" = ".", "greenhouse.server" = "server" }
+packages = ["server"]
+package-dir = { "server" = "server" }
