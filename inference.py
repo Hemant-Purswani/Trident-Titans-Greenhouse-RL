@@ -24,8 +24,12 @@ Usage:
 import asyncio
 import json
 import os
+import sys
 import textwrap
 from typing import List, Optional
+
+# Path injection: Ensure local greenhouse module is found even if not installed
+sys.path.append(os.getcwd())
 
 # Note: Critical imports moved inside functions to allow logging before failures
 
@@ -33,7 +37,7 @@ from typing import List, Optional
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
-HF_TOKEN = os.environ.get("HF_TOKEN") or "sk-no-token-provided-by-validator"
+API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN") or "sk-no-token-provided"
 
 # Optional - used for local docker evaluation
 LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME", "greenhouse-env:latest")
@@ -230,7 +234,8 @@ async def run_task(task: dict) -> dict:
 
     client = None
     try:
-        client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+        # Use strictly the API_BASE_URL and API_KEY provided by validator
+        client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     except Exception as exc:
         print(f"[FATAL] Failed to initialize OpenAI client: {exc}", flush=True)
         log_step(step=0, action="auth_error", reward=0.0, done=True, error=str(exc))
