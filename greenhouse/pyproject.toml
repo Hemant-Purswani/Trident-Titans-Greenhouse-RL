@@ -1,0 +1,44 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree.
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openenv-greenhouse"
+version = "1.0.0"
+description = "Greenhouse Climate Control Environment for OpenEnv — RL-based greenhouse management"
+requires-python = ">=3.10"
+dependencies = [
+    # Core OpenEnv runtime (provides FastAPI server + HTTP client types)
+    "openenv-core[core]>=0.2.2",
+    # Environment-specific dependencies
+    "openai>=1.0.0",
+    "numpy>=1.20.0",
+    "streamlit>=1.30.0",
+    "stable-baselines3>=2.0.0",
+    "shimmy[gym-v21]>=1.0.0",
+    "matplotlib>=3.5.0",
+    "pandas>=1.5.0",
+    "plotly>=5.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+# Server entry point - enables running via: uv run --project . server
+# or: python -m greenhouse.server.app
+server = "greenhouse.server.app:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["greenhouse", "greenhouse.server"]
+package-dir = { "greenhouse" = ".", "greenhouse.server" = "server" }

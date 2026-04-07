@@ -1,0 +1,32 @@
+spec_version: 1
+name: greenhouse
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+
+description: >
+  Greenhouse Climate Control Environment — A realistic greenhouse simulation
+  where an AI agent manages temperature, humidity, CO₂, and lighting to
+  optimize crop growth while minimizing energy consumption.
+
+tasks:
+  - id: maintain_temperature
+    difficulty: easy
+    description: >
+      Keep greenhouse temperature within the optimal 20-26°C range for 24
+      consecutive hours (24 steps). Scored by fraction of steps in range.
+
+  - id: optimize_growth
+    difficulty: medium
+    description: >
+      Maximize crop growth over 3 simulated days (72 steps) while maintaining
+      energy efficiency. Score combines growth progress, plant health, and
+      energy penalty.
+
+  - id: weather_resilience
+    difficulty: hard
+    description: >
+      Maintain all optimal growing conditions through 7 days (168 steps) of
+      extreme, stochastic weather events including heat waves and cold snaps.
+      Score weights health, growth, average reward, and survival.
