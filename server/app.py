@@ -52,6 +52,16 @@ app = create_app(
     max_concurrent_envs=4,  # Support multiple concurrent WebSocket sessions
 )
 
+@app.get("/", include_in_schema=False)
+async def root_redirect():
+    """Redirect root to /docs or /web if ENABLE_WEB_INTERFACE is on."""
+    from fastapi.responses import RedirectResponse
+    # If ENABLE_WEB_INTERFACE is true, create_app serves the UI at root (/)
+    # But if it's false, we redirect to /docs.
+    if os.getenv("ENABLE_WEB_INTERFACE", "false").lower() in ("true", "1", "yes"):
+        return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/docs")
+
 
 def main() -> None:
     """
