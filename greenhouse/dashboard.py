@@ -48,7 +48,7 @@ server_url = st.sidebar.text_input("Server URL", BASE_URL)
 task_id = st.sidebar.selectbox("Select Task", TASKS)
 
 col1, col2 = st.sidebar.columns(2)
-if col1.button("🔄 Reset Environment", use_container_width=True):
+if col1.button("🔄 Reset Environment", width="stretch"):
     try:
         if st.session_state.env:
             st.session_state.env.close()
@@ -65,7 +65,7 @@ if col1.button("🔄 Reset Environment", use_container_width=True):
     except Exception as e:
         st.error(f"Failed to reset: {e}")
 
-if col2.button("🚫 Close Env", use_container_width=True):
+if col2.button("🚫 Close Env", width="stretch"):
     if st.session_state.env:
         st.session_state.env.close()
         st.session_state.env = None
@@ -79,7 +79,7 @@ v_r = st.sidebar.slider("Ventilation Rate", 0.0, 1.0, 0.1)
 h_l = st.sidebar.slider("Humidifier Level", 0.0, 1.0, 0.2)
 a_l = st.sidebar.slider("Artificial Light", 0.0, 1.0, 0.0)
 
-if st.sidebar.button("▶️ Step (Manual)", type="primary", use_container_width=True, disabled=st.session_state.done or st.session_state.env is None):
+if st.sidebar.button("▶️ Step (Manual)", type="primary", width="stretch", disabled=st.session_state.done or st.session_state.env is None):
     action = GreenhouseAction(
         heater_power=h_p,
         ventilation_rate=v_r,
@@ -144,7 +144,7 @@ if st.session_state.last_obs:
         fig.add_trace(go.Scatter(y=df['energy_consumed_step'] / 4.0, name="Action Energy", line=dict(color='gray', dash='dot')), row=2, col=1)
         
         fig.update_layout(height=500, margin=dict(l=20, r=20, t=40, b=20), hovermode="x unified")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with c2:
         # Gauge charts for current state
@@ -169,7 +169,7 @@ if st.session_state.last_obs:
                     'thickness': 0.75,
                     'value': 90}}))
         fig_health.update_layout(height=250, margin=dict(l=10, r=10, t=40, b=10))
-        st.plotly_chart(fig_health, use_container_width=True)
+        st.plotly_chart(fig_health, width="stretch")
 
         # Reward Gauge
         fig_reward = go.Figure(go.Indicator(
@@ -185,7 +185,7 @@ if st.session_state.last_obs:
                     {'range': [0.5, 0.8], 'color': 'white'},
                     {'range': [0.8, 1.0], 'color': 'cyan'}]}))
         fig_reward.update_layout(height=250, margin=dict(l=10, r=10, t=40, b=10))
-        st.plotly_chart(fig_reward, use_container_width=True)
+        st.plotly_chart(fig_reward, width="stretch")
 
     # CO2 and light
     st.markdown("---")
@@ -197,14 +197,14 @@ if st.session_state.last_obs:
         fig_co2.add_hline(y=800, line_dash="dash", annotation_text="Optimal Min", line_color="green")
         fig_co2.add_hline(y=1200, line_dash="dash", annotation_text="Optimal Max", line_color="green")
         fig_co2.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20))
-        st.plotly_chart(fig_co2, use_container_width=True)
+        st.plotly_chart(fig_co2, width="stretch")
 
     with colB:
         st.subheader("☀️ Light Intensity")
         fig_light = go.Figure()
         fig_light.add_trace(go.Bar(y=df['light_intensity'], name="Photon Flux", marker_color='orange'))
         fig_light.update_layout(height=300, margin=dict(l=20, r=20, t=30, b=20))
-        st.plotly_chart(fig_light, use_container_width=True)
+        st.plotly_chart(fig_light, width="stretch")
 
 else:
     st.info("👈 Connect to the server and reset the environment to start monitoring.")
