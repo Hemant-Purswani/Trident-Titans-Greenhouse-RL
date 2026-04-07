@@ -15,6 +15,11 @@ tags:
 
 # 🌿 Greenhouse Climate Control Environment
 
+### 👥 Team Members
+- **Hemant Purswani** ([Hemant-Purswani](https://github.com/Hemant-Purswani))
+- **Nikita Goswami** ([Nikieta](https://github.com/Nikieta))
+- **Tirth Mehta** ([TirthM21](https://github.com/TirthM21))
+
 A **production-grade OpenEnv environment** that simulates realistic greenhouse climate management. An AI agent controls heating, ventilation, humidity, and lighting to **optimize crop growth while minimizing energy consumption**.
 
 This environment models a genuine real-world challenge: precision agriculture through automated greenhouse climate control — a domain where RL and LLM agents can provide immediate, practical value.
