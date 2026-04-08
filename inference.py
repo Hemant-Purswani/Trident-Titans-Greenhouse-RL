@@ -35,9 +35,9 @@ sys.path.append(os.getcwd())
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
-API_BASE_URL = os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
+API_BASE_URL = os.environ.get("API_BASE_URL")
+API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN")
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.3-70B-Instruct")
-API_KEY = os.environ.get("API_KEY") or os.environ.get("HF_TOKEN") or "sk-no-token-provided"
 
 # Optional - used for local docker evaluation
 LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME", "greenhouse-env:latest")
@@ -235,6 +235,9 @@ async def run_task(task: dict) -> dict:
     client = None
     try:
         # Use strictly the API_BASE_URL and API_KEY provided by validator
+        if not API_BASE_URL or not API_KEY:
+             raise ValueError("API_BASE_URL and API_KEY environment variables must be provided")
+             
         client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     except Exception as exc:
         print(f"[FATAL] Failed to initialize OpenAI client: {exc}", flush=True)
