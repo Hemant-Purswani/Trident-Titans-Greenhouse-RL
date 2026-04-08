@@ -301,10 +301,15 @@ async def run_task(task: dict) -> dict:
             )
 
         # Get final grader score from metadata
-        if obs_data.get("metadata") and obs_data["metadata"].get("grader_score"):
-            score = float(obs_data["metadata"]["grader_score"])
+        metadata = obs_data.get("metadata", {})
+        if "grader_score" in metadata:
+            score = float(metadata["grader_score"])
         else:
             score = sum(rewards) / max(len(rewards), 1)
+
+        # Ensure score is strictly between 0 and 1 for the validator
+        # Map [0, 1] -> [0.01, 0.99]
+        score = 0.01 + 0.98 * max(0.0, min(1.0, score))
 
         success = score > 0.3  # Reasonable threshold
 
