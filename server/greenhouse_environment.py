@@ -714,7 +714,8 @@ class GreenhouseEnvironment(Environment):
             + weights["stability"] * stability_score
         )
 
-        return _clamp(reward, 0.0, 1.0)
+        # Map range to be strictly between (0, 1) as per hackathon phase 2 requirements
+        return 0.01 + 0.98 * _clamp(reward, 0.0, 1.0)
 
     # ─── Grader ──────────────────────────────────────────────────────────────
 
@@ -726,17 +727,19 @@ class GreenhouseEnvironment(Environment):
             - maintain_temperature: fraction of steps with temp in optimal range
             - optimize_growth: growth_progress * (1 - energy_penalty) * health
             - weather_resilience: weighted(health, growth, energy, stability)
+
+        Mapped to (0.01, 0.99) to satisfy hackathon validation requirements.
         """
         max_steps = self._config["max_steps"]
         steps_taken = self._state.step_count
 
         if steps_taken == 0:
-            return 0.0
+            return 0.01
 
         if self._task_id == "maintain_temperature":
             # Score = fraction of steps temperature was in optimal range
             score = self._temp_in_range_count / max(steps_taken, 1)
-            return _clamp(score, 0.0, 1.0)
+            return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
         elif self._task_id == "optimize_growth":
             # Growth quality weighted by energy efficiency and avg step quality
@@ -758,7 +761,7 @@ class GreenhouseEnvironment(Environment):
                 + 0.35 * avg_reward
                 + 0.25 * health_factor
             ) * (1.0 - energy_penalty)
-            return _clamp(score, 0.0, 1.0)
+            return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
         elif self._task_id == "weather_resilience":
             # Multi-factor grading
@@ -777,9 +780,9 @@ class GreenhouseEnvironment(Environment):
                 + 0.25 * avg_reward
                 + 0.20 * survival
             )
-            return _clamp(score, 0.0, 1.0)
+            return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
-        return 0.0
+        return 0.01
 
     # ─── Observation Building ────────────────────────────────────────────────
 
