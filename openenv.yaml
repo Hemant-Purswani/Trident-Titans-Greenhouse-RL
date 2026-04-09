@@ -16,6 +16,7 @@ tasks:
     description: >
       Keep greenhouse temperature within the optimal 20-26°C range for 24
       consecutive hours (24 steps). Scored by fraction of steps in range.
+    grader: true
 
   - id: optimize_growth
     difficulty: medium
@@ -23,6 +24,7 @@ tasks:
       Maximize crop growth over 3 simulated days (72 steps) while maintaining
       energy efficiency. Score combines growth progress, plant health, and
       energy penalty.
+    grader: true
 
   - id: weather_resilience
     difficulty: hard
@@ -30,3 +32,4 @@ tasks:
       Maintain all optimal growing conditions through 7 days (168 steps) of
       extreme, stochastic weather events including heat waves and cold snaps.
       Score weights health, growth, average reward, and survival.
+    grader: true

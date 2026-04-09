@@ -162,6 +162,7 @@ class GreenhouseEnvironment(Environment):
     """
 
     SUPPORTS_CONCURRENT_SESSIONS: bool = True
+    TASKS: List[str] = ["maintain_temperature", "optimize_growth", "weather_resilience"]
 
     def __init__(self, task_id: str = "maintain_temperature"):
         """Initialize the greenhouse environment."""
@@ -386,7 +387,7 @@ class GreenhouseEnvironment(Environment):
 
         # If done, compute final grader score and attach to metadata
         if done:
-            grader_score = self._compute_grader_score()
+            grader_score = self.grader()
             obs.metadata = obs.metadata or {}
             obs.metadata["grader_score"] = round(grader_score, 4)
             obs.metadata["task_id"] = self._task_id
@@ -719,7 +720,7 @@ class GreenhouseEnvironment(Environment):
 
     # ─── Grader ──────────────────────────────────────────────────────────────
 
-    def _compute_grader_score(self) -> float:
+    def grader(self) -> float:
         """
         Compute the final grader score for the episode (0.0 – 1.0).
 
