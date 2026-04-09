@@ -204,6 +204,8 @@ def get_model_action(client: any, obs_data: dict,
             temperature=TEMPERATURE,
             max_tokens=MAX_TOKENS,
             stream=False,
+            timeout=15.0,  # Hyper-fix: Prevent hanging on slow proxy
+            response_format={"type": "json_object"} if "gpt-4" in MODEL_NAME.lower() or "gpt-3.5" in MODEL_NAME.lower() else None,
         )
         text = (completion.choices[0].message.content or "").strip()
         return parse_action(text)
