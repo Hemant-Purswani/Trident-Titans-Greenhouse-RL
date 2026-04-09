@@ -27,6 +27,7 @@ Usage:
     # Or run directly:
     python -m server.app
 """
+import os
 
 try:
     from openenv.core.env_server.http_server import create_app
@@ -61,6 +62,11 @@ async def root_redirect():
     if os.getenv("ENABLE_WEB_INTERFACE", "false").lower() in ("true", "1", "yes"):
         return RedirectResponse(url="/docs")
     return RedirectResponse(url="/docs")
+
+@app.get("/tasks")
+async def list_tasks():
+    """Explicit endpoint for task discovery by the validator."""
+    return GreenhouseEnvironment.TASKS
 
 
 def main() -> None:

@@ -311,6 +311,10 @@ async def run_task(task: dict) -> dict:
         # Map [0, 1] -> [0.01, 0.99]
         score = 0.01 + 0.98 * max(0.0, min(1.0, score))
 
+        # Final safety check: if rounding or precision issues keep it at boundaries
+        if score <= 0.0: score = 0.01
+        if score >= 1.0: score = 0.99
+
         success = score > 0.3  # Reasonable threshold
 
     except Exception as exc:

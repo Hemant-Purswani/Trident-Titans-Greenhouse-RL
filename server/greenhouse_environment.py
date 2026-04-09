@@ -720,7 +720,7 @@ class GreenhouseEnvironment(Environment):
 
     # ─── Grader ──────────────────────────────────────────────────────────────
 
-    def grader(self) -> float:
+    def grader(self, task_id: Optional[str] = None) -> float:
         """
         Compute the final grader score for the episode (0.0 – 1.0).
 
@@ -731,18 +731,21 @@ class GreenhouseEnvironment(Environment):
 
         Mapped to (0.01, 0.99) to satisfy hackathon validation requirements.
         """
-        max_steps = self._config["max_steps"]
+        target_task = task_id if task_id in TASK_CONFIGS else self._task_id
+        config = TASK_CONFIGS[target_task]
+        
+        max_steps = config["max_steps"]
         steps_taken = self._state.step_count
 
         if steps_taken == 0:
             return 0.01
 
-        if self._task_id == "maintain_temperature":
+        if target_task == "maintain_temperature":
             # Score = fraction of steps temperature was in optimal range
             score = self._temp_in_range_count / max(steps_taken, 1)
             return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
-        elif self._task_id == "optimize_growth":
+        elif target_task == "optimize_growth":
             # Growth quality weighted by energy efficiency and avg step quality
             growth_score = self._growth_progress
 
@@ -764,7 +767,7 @@ class GreenhouseEnvironment(Environment):
             ) * (1.0 - energy_penalty)
             return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
-        elif self._task_id == "weather_resilience":
+        elif target_task == "weather_resilience":
             # Multi-factor grading
             health_score = self._plant_health
             growth_score = self._growth_progress
