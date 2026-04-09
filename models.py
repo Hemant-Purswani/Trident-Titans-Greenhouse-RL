@@ -26,29 +26,21 @@ class GreenhouseAction(Action):
 
     heater_power: float = Field(
         default=0.0,
-        ge=0.0,
-        le=1.0,
         description="Heater power level (0.0=off, 1.0=full power). "
                     "Controls heating to raise greenhouse temperature.",
     )
     ventilation_rate: float = Field(
         default=0.0,
-        ge=0.0,
-        le=1.0,
         description="Ventilation fan speed (0.0=closed, 1.0=fully open). "
                     "Exchanges indoor air with outdoor air, affecting temperature and humidity.",
     )
     humidifier_level: float = Field(
         default=0.0,
-        ge=0.0,
-        le=1.0,
         description="Humidifier output level (0.0=off, 1.0=full output). "
                     "Increases indoor humidity.",
     )
     artificial_lighting: float = Field(
         default=0.0,
-        ge=0.0,
-        le=1.0,
         description="Artificial grow light intensity (0.0=off, 1.0=full brightness). "
                     "Supplements natural sunlight for photosynthesis.",
     )
