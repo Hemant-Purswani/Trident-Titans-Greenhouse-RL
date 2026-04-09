@@ -51,6 +51,7 @@ TASKS = [
     {"id": "maintain_temperature", "max_steps": 24, "difficulty": "easy"},
     {"id": "optimize_growth", "max_steps": 72, "difficulty": "medium"},
     {"id": "weather_resilience", "max_steps": 168, "difficulty": "hard"},
+    {"id": "resource_efficiency_master", "max_steps": 240, "difficulty": "expert"},
 ]
 
 # ─── System Prompt ───────────────────────────────────────────────────────────

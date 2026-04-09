@@ -33,3 +33,11 @@ tasks:
       extreme, stochastic weather events including heat waves and cold snaps.
       Score weights health, growth, average reward, and survival.
     grader: true
+
+  resource_efficiency_master:
+    difficulty: expert
+    description: >
+      Maximize crop growth over 10 days (240 steps) under strict energy constraints
+      and ultra-volatile weather. Requires perfect timing and minimal actuator use
+      to meet the Net Zero energy target.
+    grader: true

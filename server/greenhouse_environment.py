@@ -86,6 +86,13 @@ TASK_CONFIGS = {
         "extreme_weather": True,
         "weather_volatility": 0.9,
     },
+    "resource_efficiency_master": {
+        "max_steps": 240,
+        "description": "Maximize growth over 10 days while adhering to a strict Net Zero energy budget.",
+        "difficulty": "expert",
+        "extreme_weather": True,
+        "weather_volatility": 1.2,
+    },
 }
 
 # ─── Reward weights per task ────────────────────────────────────────────────
@@ -113,6 +120,14 @@ REWARD_WEIGHTS = {
         "co2": 0.1,
         "energy": 0.1,
         "stability": 0.25,
+    },
+    "resource_efficiency_master": {
+        "temperature": 0.3,
+        "humidity": 0.1,
+        "light": 0.1,
+        "co2": 0.1,
+        "energy": 0.3,
+        "stability": 0.1,
     },
 }
 
@@ -162,7 +177,12 @@ class GreenhouseEnvironment(Environment):
     """
 
     SUPPORTS_CONCURRENT_SESSIONS: bool = True
-    TASKS: List[str] = ["maintain_temperature", "optimize_growth", "weather_resilience"]
+    TASKS: List[str] = [
+        "maintain_temperature",
+        "optimize_growth",
+        "weather_resilience",
+        "resource_efficiency_master",
+    ]
 
     def __init__(self, task_id: str = "maintain_temperature"):
         """Initialize the greenhouse environment."""
@@ -785,6 +805,28 @@ class GreenhouseEnvironment(Environment):
                 + 0.25 * growth_score
                 + 0.25 * avg_reward
                 + 0.20 * survival
+            )
+            return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
+            
+        elif target_task == "resource_efficiency_master":
+            # Multi-factor grading with emphasis on energy
+            health_score = self._plant_health
+            growth_score = self._growth_progress
+
+            # Average per-step reward
+            avg_reward = sum(self._step_scores) / max(len(self._step_scores), 1)
+
+            # Strict energy efficiency: compare to target (1.0 kWh/step)
+            strict_energy_target = max_steps * 1.0
+            energy_ratio = self._total_energy / max(strict_energy_target, 0.01)
+            # Steep penalty for exceeding budget
+            energy_score = _clamp(1.2 - energy_ratio, 0.0, 1.0)
+
+            score = (
+                0.35 * growth_score
+                + 0.30 * energy_score
+                + 0.20 * health_score
+                + 0.15 * avg_reward
             )
             return 0.01 + 0.98 * _clamp(score, 0.0, 1.0)
 
