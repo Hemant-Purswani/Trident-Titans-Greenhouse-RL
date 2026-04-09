@@ -11,14 +11,14 @@ description: >
   optimize crop growth while minimizing energy consumption.
 
 tasks:
-  maintain_temperature:
+  - id: maintain_temperature
     difficulty: easy
     description: >
       Keep greenhouse temperature within the optimal 20-26°C range for 24
       consecutive hours (24 steps). Scored by fraction of steps in range.
     grader: true
 
-  optimize_growth:
+  - id: optimize_growth
     difficulty: medium
     description: >
       Maximize crop growth over 3 simulated days (72 steps) while maintaining
@@ -26,7 +26,7 @@ tasks:
       energy penalty.
     grader: true
 
-  weather_resilience:
+  - id: weather_resilience
     difficulty: hard
     description: >
       Maintain all optimal growing conditions through 7 days (168 steps) of
@@ -34,7 +34,7 @@ tasks:
       Score weights health, growth, average reward, and survival.
     grader: true
 
-  resource_efficiency_master:
+  - id: resource_efficiency_master
     difficulty: expert
     description: >
       Maximize crop growth over 10 days (240 steps) under strict energy constraints
