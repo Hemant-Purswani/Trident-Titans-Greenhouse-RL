@@ -68,6 +68,16 @@ async def list_tasks():
     """Explicit endpoint for task discovery by the validator."""
     return GreenhouseEnvironment.TASKS
 
+@app.get("/info")
+async def get_info():
+    """Returns general information about the environment and available tasks."""
+    return {
+        "env_name": "greenhouse",
+        "tasks": GreenhouseEnvironment.TASKS,
+        "spec_version": "1",
+        "description": "Greenhouse Climate Control Environment"
+    }
+
 
 def main() -> None:
     """

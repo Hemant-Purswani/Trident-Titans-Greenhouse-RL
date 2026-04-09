@@ -346,7 +346,9 @@ class GreenhouseEnvironment(Environment):
             self._day += 1
 
         # ── Step 7: Compute reward ──────────────────────────────────
-        reward = self._compute_reward(energy_step)
+        raw_reward = self._compute_reward(energy_step)
+        # Hyper-fix: Map reward strictly to (0.01, 0.99)
+        reward = 0.01 + 0.98 * _clamp(raw_reward, 0.0, 1.0)
         self._total_reward += reward
 
         # Track for grading
@@ -838,7 +840,8 @@ class GreenhouseEnvironment(Environment):
             last_action=last_action,
             # Standard fields
             done=done,
-            reward=round(reward, 4),
+            # Hyper-fix: Ensure observation reward is strictly (0.01, 0.99)
+            reward=max(0.01, min(0.99, round(reward, 4))),
             metadata={
                 "step": self._state.step_count,
                 "task": self._task_id,
